@@ -18,9 +18,9 @@ job::job(const std::string& name,
 std::ostream &operator<<(std::ostream & out, const job & job)
 {
     out<< "job name: " << job._jopName
-        <<"\tarrival time: " << job._arrivalTime
-        <<"\trun time: " << job._runTime
-        <<"\tpriority: " << job._priority;
+        <<"\t arrival time: " << job._arrivalTime
+        <<"\t run time: " << job._runTime
+        <<"\t priority: " << job._priority;
     out<<std::endl;
     return out;
 }
