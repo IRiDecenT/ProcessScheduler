@@ -4,7 +4,7 @@
 class job
 {
 private:
-    std::string _jopName;
+    std::string _jobName;
     int _arrivalTime;
     int _runTime;
     int _priority;
@@ -15,9 +15,12 @@ public:
     int arrivalTime()  const  { return _arrivalTime;  }
     int runTime() const   { return _runTime;   }
     int priority() const  { return _priority;  }
+    std::string name() const { return _jobName; }
 };
 
 struct compByArrivalFirst
 {
     bool operator()(const job& j1, const job& j2) { return j1.arrivalTime() > j2.arrivalTime(); }
 };
+
+void printTime(const timeRecord& t);

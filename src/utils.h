@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <algorithm>
 //using jobtime = int;
 
 using timeRecord = std::pair<double, double>;
+
