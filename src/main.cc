@@ -1,7 +1,6 @@
-#include "util.h"
+#include "utils.h"
 #include "job.h"
-#include <vector>
-
+#include "FCFS.h"
 void test1()
 {
     job j{"A", 0, 3, 3};
@@ -18,6 +17,15 @@ void test1()
 
 int main()
 {
-
+    //std::priority_queue<>
+    std::vector<job> jobs{
+        {"A", 0, 3, 3},
+        {"B", 2, 6, 1},
+        {"C", 4, 4, 3},
+        {"D", 6, 5, 4},
+        {"E", 8, 2, 2}};
+    FCFS f(jobs);
+    auto ans = f.run();
+    std::cout<<ans.first<<" "<<ans.second<<std::endl;
     return 0;
 }
