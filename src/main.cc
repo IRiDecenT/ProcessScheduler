@@ -3,6 +3,7 @@
 #include "FCFS.h"
 #include "HRRF.h"
 #include "RR.h"
+#include "MLQF.h"
 
 // hardcode for now, only to test
 std::vector<job> load_data()
@@ -37,10 +38,18 @@ void test_RR()
     printTime(f.run());
 }
 
+void test_MLQF()
+{
+    auto jobs = load_data();
+    MLFQ f(jobs);
+    //f.run();
+}
+
 int main()
 {
     test_fcfs();
     test_hrrf();
     test_RR();
+    test_MLQF();
     return 0;
 }

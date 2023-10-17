@@ -23,4 +23,8 @@ struct compByArrivalFirst
     bool operator()(const job& j1, const job& j2) { return j1.arrivalTime() > j2.arrivalTime(); }
 };
 
+auto JobComp = [](const job& j1, const job& j2){
+        return j1.arrivalTime() < j2.arrivalTime();
+    };
+
 void printTime(const timeRecord& t);
