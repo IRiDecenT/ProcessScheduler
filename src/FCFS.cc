@@ -6,7 +6,7 @@ FCFS::FCFS(const std::vector<job> &v):_totalTime(0), _totalTime_with_weight(0.0)
         _runqueue.push(job);
 }
 
-void FCFS::print()
+void FCFS::schedulingInfo()
 {
     std::cout<< "模拟FCFS调度算法, 进程的调度执行顺序如下:" << std::endl;
     auto q = _runqueue;
@@ -25,7 +25,6 @@ void FCFS::print()
 
 timeRecord FCFS::run()
 {
-    print();
     int sz = _runqueue.size();
     auto q = _runqueue;
     int preEnd = q.top().arrivalTime();
@@ -40,6 +39,7 @@ timeRecord FCFS::run()
         preEnd = j.arrivalTime() + wait + j.runTime();
         q.pop();
     }
+    schedulingInfo();
     //printTime();
     //return std::make_pair((double)_totalTime / sz, _totalTime_with_weight / sz)
     return { (double)_totalTime / sz, _totalTime_with_weight / sz };

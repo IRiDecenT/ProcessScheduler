@@ -1,0 +1,34 @@
+#include "job.h"
+#include "util.h"
+
+struct job_rr : public job
+{
+    int _wait; // 等待的总时间
+    int _leftRuntime;
+    bool _inRunqueue;
+    // bool _isProcessed;
+    // int _lastInterruptTime; //上一次被切换走的时刻
+    std::vector<timePeriod> _runPeriod;
+    job_rr(const job&);
+};
+
+class RR
+{
+private:
+    std::vector<job_rr> _jobs;
+    std::queue<job_rr*> _runqueue;
+    std::vector<job_rr*> _schedulingList;
+    int _totalTime; //总周转时间
+    double _totalTime_with_weight; //总带权周转时间
+
+private:
+    timeRecord solveTimeRecord();
+    void schedulingInfo();
+
+
+public:
+    RR(const std::vector<job>&);
+    timeRecord run();
+
+};
+

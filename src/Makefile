@@ -1,10 +1,13 @@
 CC=g++
 FLAG=-std=c++17
 
-main:main.o job.o FCFS.o HRRF.o
+main:main.o job.o FCFS.o HRRF.o RR.o
 	$(CC) $^ -o $@ $(FLAG)
 
 job.o:job.cc
+	$(CC) -c $^ -o $@ $(FLAG)
+
+RR.o:RR.cc
 	$(CC) -c $^ -o $@ $(FLAG)
 
 HRRF.o: HRRF.cc

@@ -2,6 +2,7 @@
 #include "job.h"
 #include "FCFS.h"
 #include "HRRF.h"
+#include "RR.h"
 
 // hardcode for now, only to test
 std::vector<job> load_data()
@@ -29,9 +30,17 @@ void test_hrrf()
     printTime(f.run());
 }
 
+void test_RR()
+{
+    auto jobs = load_data();
+    RR f(jobs);
+    printTime(f.run());
+}
+
 int main()
 {
     test_fcfs();
     test_hrrf();
+    test_RR();
     return 0;
 }

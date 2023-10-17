@@ -20,15 +20,15 @@ HRRF::HRRF(const std::vector<job> & v):_totalTime(0), _totalTime_with_weight(0.0
     //     std::cout << e;
 }
 
-void HRRF::print()
+void HRRF::schedulingInfo()
 {
+    std::cout << "模拟HRRF调度, 进程的调度执行顺序如下:" << std::endl;
     for(const auto& j : _runqueue)
         std::cout<< j;
 }
 
 timeRecord HRRF::run()
 {
-    std::cout << "模拟HRRF调度, 进程的调度执行顺序如下:" << std::endl;
     _runqueue.push_back(_jobs[0]);
     _jobs[0]._isProcessed = true;
     int curTime = _jobs[0].arrivalTime() + _jobs[0].runTime();
@@ -65,7 +65,7 @@ timeRecord HRRF::run()
         _runqueue.push_back(*curJob);
     }
 
-    print();
+    schedulingInfo();
     return { (double)_totalTime / _jobs.size(), _totalTime_with_weight / _jobs.size() };
 }
 

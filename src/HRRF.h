@@ -20,7 +20,7 @@ private:
     double _totalTime_with_weight; //总带权周转时间
 
 private:
-    void print();
+    void schedulingInfo();
 
 public:
     HRRF(const std::vector<job>&);
