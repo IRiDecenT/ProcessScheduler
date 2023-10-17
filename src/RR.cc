@@ -39,6 +39,14 @@ void RR::schedulingInfo()
     }
 }
 
+bool RR::allInQueue()
+{
+    bool ret = true;
+    for(auto& j : _jobs)
+        ret &= j._inRunqueue;
+    return ret;
+}
+
 RR::RR(const std::vector<job> &jobs)
     : _totalTime(0), _totalTime_with_weight(0.0)
 {
@@ -48,9 +56,7 @@ RR::RR(const std::vector<job> &jobs)
 
     _schedulingList.reserve(_jobs.size());
 
-    std::sort(_jobs.begin(), _jobs.end(), [](const job& j1, const job& j2){
-        return j1.arrivalTime() < j2.arrivalTime();
-    });
+    std::sort(_jobs.begin(), _jobs.end(), JobComp);
 
     // for debug
     // for(auto& e : _jobs)
@@ -86,11 +92,15 @@ timeRecord RR::run()
         (curJob_ptr->_runPeriod).push_back({curTime, curTime + runtime});
         curTime += runtime;
 
-        //在当前进程运行时间片结束要被切换时，将在当前时间之到来的进程加入到runqueue中等待
-        //由于_jobs以及按照到达时间排好序按顺序迭代判断即可
+        // 在当前进程运行时间片结束要被切换时，将在当前时间之到来的进程加入到runqueue中等待
+        // 由于_jobs以及按照到达时间排好序按顺序迭代判断即可
+        // 存在一个bug: 当前面进程执行完停止调度后过了一段时间才有进程到来情况下
+        // 后续的进程虽然前一个条件满但是不满足到达时间小于当前时间，故不会被调度到
+        // 需要一段逻辑判断并处理这样的情况
         for(auto& j : _jobs)
         {
-            if(!j._inRunqueue && j.arrivalTime() < curTime)
+            // 此处小于等于因为前一个结束后一个立即到达的情况下默认先处理新来的
+            if(!j._inRunqueue && j.arrivalTime() <= curTime)
             {
                 _runqueue.push(&j);
                 j._inRunqueue = true;
@@ -98,8 +108,26 @@ timeRecord RR::run()
             else
                 continue;
         }
+        // 当前进程还没处理完，重新加入队列等待再次被调度
         if(curJob_ptr->_leftRuntime != 0)
             _runqueue.push(curJob_ptr);
+        // 处理上个bug的逻辑，如果运行队列是空的但是还有未被处理的任务时
+        if(_runqueue.empty() && !allInQueue())
+        {
+            for(auto& j : _jobs)
+            {
+                if(j._inRunqueue)
+                    continue;
+                else
+                {
+                    // 将一段时间后才来的任务加入队列
+                    _runqueue.push(&j);
+                    // 将当前时间调整为后来任务的到达时间
+                    curTime = j.arrivalTime();
+                    break;
+                }
+            }
+        }
     }
 
     // for debug
@@ -116,7 +144,7 @@ timeRecord RR::run()
 }
 
 job_rr::job_rr(const job & j)
-    :job(j), _wait(0)
+    :job(j)
     ,_leftRuntime(this->runTime())
     ,_inRunqueue(false)
     //_isProcessed(false)

@@ -1,9 +1,12 @@
+#pragma once
 #include "job.h"
 #include "util.h"
 
+const int RR_PER = 4;
+
 struct job_rr : public job
 {
-    int _wait; // 等待的总时间
+    // int _wait; // 等待的总时间
     int _leftRuntime;
     bool _inRunqueue;
     // bool _isProcessed;
@@ -24,6 +27,7 @@ private:
 private:
     timeRecord solveTimeRecord();
     void schedulingInfo();
+    bool allInQueue();
 
 
 public:
