@@ -17,6 +17,19 @@ int pri2period(int priority)
     }
 }
 
+timeRecord MLFQ::solveTimeRecord()
+{
+    int size = _jobs.size();
+    for(const auto& j : _jobs)
+    {
+        int n = j._runPeriod.size();
+        int period = j._runPeriod[n - 1].second - j.arrivalTime();
+        _totalTime += period;
+        _totalTime_with_weight += (double)period / j.runTime();
+    }
+    return {(double)_totalTime / size, _totalTime_with_weight / size};
+}
+
 job_mlfq::job_mlfq(const job &j)
     :job(j),
     _leftRuntime(j.runTime()),
@@ -25,7 +38,7 @@ job_mlfq::job_mlfq(const job &j)
 
 bool MLFQ::queuesAllEmpty()
 {
-    return _queues[PRI0].empty() && _queues[PRI1].empty() && _queues.empty();
+    return _queues[PRI0].empty() && _queues[PRI1].empty() && _queues[PRI2].empty();
 }
 
 void MLFQ::queuePRI0_scheduling(int& curTime)
@@ -50,7 +63,15 @@ void MLFQ::queuePRI0_scheduling(int& curTime)
         curTime += runtime;
         // 如果当前进程未在时间段内完成，则进入PRI1队列
         if(curJob_ptr->_leftRuntime > 0)
+        {
+            // 修改当前进程所属队列的信息
+            curJob_ptr->_queueIndex = PRI1;
             _queues[PRI1].push(curJob_ptr);
+        }
+        // 如果当前进程在时间段内完成，则不再进入队列
+        // 前面已经pop过了，不需要再pop，但是需要修改所在队列信息（之前没改造成死循环）
+        else
+            curJob_ptr->_queueIndex = FINISHED;
         // 将当前时间之前到达的任务放入PRI0队列
         for(auto& j : _jobs)
         {
@@ -82,7 +103,12 @@ void MLFQ::queuePRI1_scheduling(int& curTime)
         curTime += runtime;
         // 如果当前进程未在时间段内完成，则进入PRI2队列
         if(curJob_ptr->_leftRuntime > 0)
+        {
+            curJob_ptr->_queueIndex = PRI2;
             _queues[PRI2].push(curJob_ptr);
+        }
+        else
+            curJob_ptr->_queueIndex = FINISHED;
         // 此处检查是否有新任务来
         // 对于新任务，需要放进PRI0队列，然后调用queuePRI0_scheduling先处理新任务
         for(auto& j : _jobs)
@@ -118,6 +144,8 @@ void MLFQ::queuePRI2_scheduling(int& curTime)
         // 如果当前进程未在时间段内完成，则重新进入PRI2队列等待被再次调度
         if(curJob_ptr->_leftRuntime > 0)
             _queues[PRI2].push(curJob_ptr);
+        else
+            curJob_ptr->_queueIndex = FINISHED;
         // 此处检查是否有新任务来
         // 对于新任务，需要放进PRI0队列，然后调用queuePRI0_scheduling先处理新任务
         for(auto& j : _jobs)
@@ -128,6 +156,26 @@ void MLFQ::queuePRI2_scheduling(int& curTime)
         // 处理优先级更高的新任务（如果有）
         queuePRI0_scheduling(curTime);
         queuePRI1_scheduling(curTime);
+    }
+}
+
+void MLFQ::schedulingInfo()
+{
+    std::cout << "模拟多级反馈队列调度(非抢占式MLQF), 三级队列, 进程的调度执行顺序如下:" << std::endl;
+    for(const auto& ptr : _schedulingList)
+        std::cout << ptr->name() << " ";
+    std::cout << std::endl;
+
+    std::cout << "每一个进程运行时间片如下:" << std::endl;
+    for(const auto& j : _jobs)
+    {
+        std::cout << j.name() << ": ";
+        for(const auto& period : j._runPeriod)
+        {
+            std::cout << "(" << period.first << ", "
+                    << period.second << ")" << " ";
+        }
+        std::cout << std::endl;
     }
 }
 
@@ -142,6 +190,8 @@ MLFQ::MLFQ(std::vector<job> &jobs, int queue_size)
     std::sort(_jobs.begin(), _jobs.end(), JobComp);
 
     _queues.reserve(queue_size);
+    for(int i = 0; i < queue_size; ++i)
+        _queues.push_back(std::queue<job_mlfq*>());
 
     // for debug
     // for(auto& j : _jobs)
@@ -156,19 +206,20 @@ timeRecord MLFQ::run()
 
     while(!queuesAllEmpty())
     {
-        queuePRI0_scheduling(curTime);
-        queuePRI1_scheduling(curTime);
-        queuePRI2_scheduling(curTime);
+        queuePRI0_scheduling(curTime); // 调度PRI0优先级队列
+        queuePRI1_scheduling(curTime); // 调度PRI1优先级队列
+        queuePRI2_scheduling(curTime); // 调度PRI2优先级队列
     }
 
     // for debug
-    for(auto& ptr : _schedulingList)
-    {
-        std::cout<<ptr->name()<<std::endl;
-        for(auto& pair : ptr->_runPeriod)
-        {
-            std::cout<< pair.first << " " << pair.second << std::endl;
-        }
-    }
-    return timeRecord();
+    // for(auto& ptr : _schedulingList)
+    // {
+    //     std::cout<<ptr->name()<<std::endl;
+    //     for(auto& pair : ptr->_runPeriod)
+    //     {
+    //         std::cout<< pair.first << " " << pair.second << std::endl;
+    //     }
+    // }
+    schedulingInfo();
+    return solveTimeRecord();
 }

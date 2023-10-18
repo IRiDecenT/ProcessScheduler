@@ -3,10 +3,11 @@
 #include "job.h"
 #include "util.h"
 
-const int NO_INQUEUE = -1;
+const int NO_INQUEUE = -1; // 表示还未进入队列，尚未处理的任务
 const int PRI0 = 0;
 const int PRI1 = 1;
 const int PRI2 = 2;
+const int FINISHED = 3; // 已经完成的任务
 
 const int PRI0_PERIOD = 1;
 const int PRI1_PERIOD = 2;
@@ -36,6 +37,9 @@ private:
     void queuePRI0_scheduling(int&);
     void queuePRI1_scheduling(int&);
     void queuePRI2_scheduling(int&x);
+    void schedulingInfo();
+    timeRecord solveTimeRecord();
+
 
 
 public:

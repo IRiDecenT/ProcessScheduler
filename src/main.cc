@@ -42,7 +42,7 @@ void test_MLQF()
 {
     auto jobs = load_data();
     MLFQ f(jobs);
-    //f.run();
+    printTime(f.run());
 }
 
 int main()
