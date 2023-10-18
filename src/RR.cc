@@ -47,6 +47,21 @@ bool RR::allInQueue()
     return ret;
 }
 
+// test
+void RR::infoForPy()
+{
+    for(const auto& j : _jobs)
+    {
+        std::cout << j.name();
+        for(const auto& period : j._runPeriod)
+        {
+            std::cout << "|" << period.first << "-"
+                    << period.second;
+        }
+        std::cout << std::endl;
+    }
+}
+
 RR::RR(const std::vector<job> &jobs)
     : _totalTime(0), _totalTime_with_weight(0.0)
 {
@@ -139,7 +154,8 @@ timeRecord RR::run()
     //         std::cout<< pair.first << " " << pair.second << std::endl;
     //     }
     // }
-    schedulingInfo();
+    // schedulingInfo();
+    infoForPy();
     return solveTimeRecord();
 }
 

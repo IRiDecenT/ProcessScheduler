@@ -47,9 +47,9 @@ void test_MLQF()
 
 int main()
 {
-    test_fcfs();
-    test_hrrf();
+    // test_fcfs();
+    // test_hrrf();
     test_RR();
-    test_MLQF();
+    // test_MLQF();
     return 0;
 }

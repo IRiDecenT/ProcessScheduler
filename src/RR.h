@@ -28,6 +28,9 @@ private:
     timeRecord solveTimeRecord();
     void schedulingInfo();
     bool allInQueue();
+    // test for info redirect to python
+    void infoForPy();
+
 
 
 public:
