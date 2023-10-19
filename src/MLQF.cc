@@ -17,9 +17,9 @@ int pri2period(int priority)
     }
 }
 
-timeRecord MLFQ::solveTimeRecord()
+void MLQF::solveTimeRecord()
 {
-    int size = _jobs.size();
+    //int size = _jobs.size();
     for(const auto& j : _jobs)
     {
         int n = j._runPeriod.size();
@@ -27,25 +27,39 @@ timeRecord MLFQ::solveTimeRecord()
         _totalTime += period;
         _totalTime_with_weight += (double)period / j.runTime();
     }
-    return {(double)_totalTime / size, _totalTime_with_weight / size};
+    //return {(double)_totalTime / size, _totalTime_with_weight / size};
 }
 
-job_mlfq::job_mlfq(const job &j)
+void MLQF::infoForPy()
+{
+    for(const auto& j : _jobs)
+    {
+        std::cout << j.name();
+        for(const auto& period : j._runPeriod)
+        {
+            std::cout << "|" << period.first << "-"
+                    << period.second;
+        }
+        std::cout << std::endl;
+    }
+}
+
+job_mlqf::job_mlqf(const job &j)
     :job(j),
     _leftRuntime(j.runTime()),
     _queueIndex(NO_INQUEUE)
 {}
 
-bool MLFQ::queuesAllEmpty()
+bool MLQF::queuesAllEmpty()
 {
     return _queues[PRI0].empty() && _queues[PRI1].empty() && _queues[PRI2].empty();
 }
 
-void MLFQ::queuePRI0_scheduling(int& curTime)
+void MLQF::queuePRI0_scheduling(int& curTime)
 {
     while(!_queues[PRI0].empty())
     {
-        job_mlfq* curJob_ptr = _queues[PRI0].front();
+        job_mlqf* curJob_ptr = _queues[PRI0].front();
         _queues[PRI0].pop();
         _schedulingList.push_back(curJob_ptr);
         int runtime = pri2period(PRI0);
@@ -80,12 +94,12 @@ void MLFQ::queuePRI0_scheduling(int& curTime)
         }
     }
 }
-void MLFQ::queuePRI1_scheduling(int& curTime)
+void MLQF::queuePRI1_scheduling(int& curTime)
 {
     // 此时PRI0队列一定为空
     while(!_queues[PRI1].empty())
     {
-        job_mlfq* curJob_ptr = _queues[PRI1].front();
+        job_mlqf* curJob_ptr = _queues[PRI1].front();
         _queues[PRI1].pop();
         _schedulingList.push_back(curJob_ptr);
         int runtime = pri2period(PRI1);
@@ -121,12 +135,12 @@ void MLFQ::queuePRI1_scheduling(int& curTime)
     }
 }
 
-void MLFQ::queuePRI2_scheduling(int& curTime)
+void MLQF::queuePRI2_scheduling(int& curTime)
 {
     // 此处PRI0和PRI1队列一定为空
     while(!_queues[PRI2].empty())
     {
-        job_mlfq* curJob_ptr = _queues[PRI2].front();
+        job_mlqf* curJob_ptr = _queues[PRI2].front();
         _queues[PRI2].pop();
         _schedulingList.push_back(curJob_ptr);
         int runtime = pri2period(PRI2);
@@ -159,7 +173,7 @@ void MLFQ::queuePRI2_scheduling(int& curTime)
     }
 }
 
-void MLFQ::schedulingInfo()
+void MLQF::schedulingInfo()
 {
     std::cout << "模拟多级反馈队列调度(非抢占式MLQF), 三级队列, 进程的调度执行顺序如下:" << std::endl;
     for(const auto& ptr : _schedulingList)
@@ -177,28 +191,30 @@ void MLFQ::schedulingInfo()
         }
         std::cout << std::endl;
     }
+    // 输出平均周转时间和平均加权周转时间
+    printTime({ (double)_totalTime / _jobs.size(), _totalTime_with_weight / _jobs.size()});
 }
 
-MLFQ::MLFQ(std::vector<job> &jobs, int queue_size)
+MLQF::MLQF(std::vector<job> &jobs, int queue_size)
     : _totalTime(0),
       _totalTime_with_weight(0.0)
 {
     _jobs.reserve(jobs.size());
     for(const auto& j : jobs)
-        _jobs.push_back(job_mlfq(j));
+        _jobs.push_back(job_mlqf(j));
 
     std::sort(_jobs.begin(), _jobs.end(), JobComp);
 
     _queues.reserve(queue_size);
     for(int i = 0; i < queue_size; ++i)
-        _queues.push_back(std::queue<job_mlfq*>());
+        _queues.push_back(std::queue<job_mlqf*>());
 
     // for debug
     // for(auto& j : _jobs)
     //     std::cout << j;
 }
 
-timeRecord MLFQ::run()
+timeRecord MLQF::run(bool isVisualized)
 {
     int curTime = _jobs[0].arrivalTime();
     _jobs[0]._queueIndex = PRI0;
@@ -220,6 +236,16 @@ timeRecord MLFQ::run()
     //         std::cout<< pair.first << " " << pair.second << std::endl;
     //     }
     // }
+    //schedulingInfo();
+    solveTimeRecord();
+
+    if(isVisualized)
+        infoForPy();
+
+    return { (double)_totalTime / _jobs.size(), _totalTime_with_weight / _jobs.size()};
+}
+
+void MLQF::outputSchedulingInfo()
+{
     schedulingInfo();
-    return solveTimeRecord();
 }

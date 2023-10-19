@@ -15,6 +15,13 @@ void FCFS::schedulingInfo()
         std::cout<<q.top();
         q.pop();
     }
+    int sz = _runqueue.size();
+    printTime({ (double)_totalTime / sz, _totalTime_with_weight / sz } );
+}
+
+void FCFS::infoForPy()
+{
+
 }
 
 // void FCFS::printTime()
@@ -23,7 +30,7 @@ void FCFS::schedulingInfo()
 //     std::cout<<"平均带权周转时间:" << " " << _totalTime_with_weight / _runqueue.size() << std::endl;
 // }
 
-timeRecord FCFS::run()
+timeRecord FCFS::run(bool isVisualized)
 {
     int sz = _runqueue.size();
     auto q = _runqueue;
@@ -39,12 +46,15 @@ timeRecord FCFS::run()
         preEnd = j.arrivalTime() + wait + j.runTime();
         q.pop();
     }
-    schedulingInfo();
+    //schedulingInfo();
     //printTime();
     //return std::make_pair((double)_totalTime / sz, _totalTime_with_weight / sz)
+    if(isVisualized)
+        infoForPy();
     return { (double)_totalTime / sz, _totalTime_with_weight / sz };
 }
 
-
-
-
+void FCFS::outputSchedulingInfo()
+{
+    schedulingInfo();
+}

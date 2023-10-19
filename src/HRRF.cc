@@ -25,9 +25,14 @@ void HRRF::schedulingInfo()
     std::cout << "模拟HRRF调度, 进程的调度执行顺序如下:" << std::endl;
     for(const auto& j : _runqueue)
         std::cout<< j;
+    printTime({ (double)_totalTime / _jobs.size(), _totalTime_with_weight / _jobs.size() });
 }
 
-timeRecord HRRF::run()
+void HRRF::infoForPy()
+{
+}
+
+timeRecord HRRF::run(bool isVisualized)
 {
     _runqueue.push_back(_jobs[0]);
     _jobs[0]._isProcessed = true;
@@ -65,10 +70,16 @@ timeRecord HRRF::run()
         _runqueue.push_back(*curJob);
     }
 
-    schedulingInfo();
+    if(isVisualized)
+        infoForPy();
+    //schedulingInfo();
     return { (double)_totalTime / _jobs.size(), _totalTime_with_weight / _jobs.size() };
 }
 
+void HRRF::outputSchedulingInfo()
+{
+    schedulingInfo();
+}
 
 job_hrrf::job_hrrf(const job &j)
             : job(j),

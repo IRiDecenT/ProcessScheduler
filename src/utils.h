@@ -4,6 +4,7 @@
 #include <vector>
 #include <queue>
 #include <algorithm>
+#include <cstring>
 //using jobtime = int;
 
 using timeRecord = std::pair<double, double>;

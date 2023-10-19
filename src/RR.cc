@@ -6,9 +6,9 @@
 //         if(!j._isProcessed & j._lastInterruptTime < curTime)
 // }
 
-timeRecord RR::solveTimeRecord()
+void RR::solveTimeRecord()
 {
-    int size = _jobs.size();
+    //int size = _jobs.size();
     for(const auto& j : _jobs)
     {
         int n = j._runPeriod.size();
@@ -16,7 +16,7 @@ timeRecord RR::solveTimeRecord()
         _totalTime += period;
         _totalTime_with_weight += (double)period / j.runTime();
     }
-    return {(double)_totalTime / size, _totalTime_with_weight / size};
+    //return {(double)_totalTime / size, _totalTime_with_weight / size};
 }
 
 void RR::schedulingInfo()
@@ -37,6 +37,8 @@ void RR::schedulingInfo()
         }
         std::cout << std::endl;
     }
+    // 平均周转、平均加权周转
+    printTime({ (double)_totalTime / _jobs.size(), _totalTime_with_weight / _jobs.size()});
 }
 
 bool RR::allInQueue()
@@ -85,7 +87,7 @@ RR::RR(const std::vector<job> &jobs)
 
 
 
-timeRecord RR::run()
+timeRecord RR::run(bool isVisualized)
 {
     _runqueue.push(&_jobs[0]);
     _jobs[0]._inRunqueue = true;
@@ -155,8 +157,17 @@ timeRecord RR::run()
     //     }
     // }
     // schedulingInfo();
-    infoForPy();
-    return solveTimeRecord();
+    // infoForPy();
+    solveTimeRecord();
+
+    if(isVisualized)
+        infoForPy();
+    return { (double)_totalTime / _jobs.size(), _totalTime_with_weight / _jobs.size()};
+}
+
+void RR::outputSchedulingInfo()
+{
+    schedulingInfo();
 }
 
 job_rr::job_rr(const job & j)

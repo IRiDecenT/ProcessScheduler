@@ -21,10 +21,14 @@ private:
 
 private:
     void schedulingInfo();
+    void infoForPy();
+
 
 public:
     HRRF(const std::vector<job>&);
-    timeRecord run();
+    timeRecord run(bool);
+    void outputSchedulingInfo();
+
 };
 
 auto compByRespones = [](job_hrrf* j1, job_hrrf* j2)

@@ -25,7 +25,7 @@ private:
     double _totalTime_with_weight; //总带权周转时间
 
 private:
-    timeRecord solveTimeRecord();
+    void solveTimeRecord();
     void schedulingInfo();
     bool allInQueue();
     // test for info redirect to python
@@ -35,7 +35,7 @@ private:
 
 public:
     RR(const std::vector<job>&);
-    timeRecord run();
-
+    timeRecord run(bool);
+    void outputSchedulingInfo();
 };
 

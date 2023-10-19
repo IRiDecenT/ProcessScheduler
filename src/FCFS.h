@@ -8,11 +8,16 @@ private:
     int _totalTime; //总周转时间
     double _totalTime_with_weight; //总带权周转时间
 
+
 private:
     void schedulingInfo();
+    void infoForPy();
+
 
 public:
     FCFS(const std::vector<job>& v);
     //void printTime();
-    timeRecord run();
+    timeRecord run(bool);
+
+    void outputSchedulingInfo();
 };

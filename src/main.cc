@@ -17,39 +17,97 @@ std::vector<job> load_data()
     return jobs;
 }
 
-void test_fcfs()
+// void test_fcfs()
+// {
+//     auto jobs = load_data();
+//     FCFS f(jobs);
+//     printTime(f.run());
+// }
+
+// void test_hrrf()
+// {
+//     auto jobs = load_data();
+//     HRRF f(jobs);
+//     printTime(f.run());
+// }
+
+// void test_RR()
+// {
+//     auto jobs = load_data();
+//     RR f(jobs);
+//     printTime(f.run());
+// }
+
+// void test_MLQF()
+// {
+//     auto jobs = load_data();
+//     MLQF f(jobs);
+//     printTime(f.run());
+// }
+
+template<typename T>
+void test(bool flag)
 {
     auto jobs = load_data();
-    FCFS f(jobs);
-    printTime(f.run());
+    T f(jobs);
+    f.run(flag);
+    if(!flag)
+        f.outputSchedulingInfo();
 }
 
-void test_hrrf()
+// ./main [for normal usage, print all information in terminal]
+// ./main -v | visualize.py [to visualize the information]
+
+void usage()
 {
-    auto jobs = load_data();
-    HRRF f(jobs);
-    printTime(f.run());
+    std::cerr << "usage error! Correct usage:" << std::endl;
+    std::cerr << "\t\t./main (for normal usage, print all information in terminal)" << std::endl;
+    std::cerr << "\t\t./main -v | python3 [visualize python code] (to visualize the information)" << std::endl;
 }
 
-void test_RR()
-{
-    auto jobs = load_data();
-    RR f(jobs);
-    printTime(f.run());
-}
+// void f()
+// {
+//     bool vis;
+//     if(argc == 1)
+//         vis = false;
+//     else if(argc == 2 && strcmp("-v", argv[1]))
+//         vis = true;
+//     else
+//     {
+//         usage();
+//         exit(-1);
+//     }
 
-void test_MLQF()
-{
-    auto jobs = load_data();
-    MLFQ f(jobs);
-    printTime(f.run());
-}
+//     test<FCFS>(vis);
+//     test<HRRF>(vis);
+//     test<MLQF>(vis);
+//     test<RR>(vis);
+// }
 
-int main()
+int main(int argc, char* argv[])
 {
-    // test_fcfs();
-    // test_hrrf();
-    test_RR();
-    // test_MLQF();
+    bool vis;
+
+    if(argc == 1)
+    {
+        vis = false;
+        test<FCFS>(vis);
+        test<HRRF>(vis);
+        test<RR>(vis);
+        test<MLQF>(vis);
+    }
+    else if(argc == 2 && (strcmp("-v", argv[1]) == 0))
+    {
+        vis = true;
+        // test<MLQF>(vis);
+        test<MLQF>(vis);
+    }
+    else
+    {
+        usage();
+        exit(-1);
+    }
+
+
     return 0;
 }
