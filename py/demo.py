@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FixedFormatter, FixedLocator
+from matplotlib.ticker import FixedFormatter, FixedLocator, MaxNLocator
 import numpy as np
 import fileinput
 
@@ -37,6 +37,7 @@ for i in range(0, len(time)):
 
 ax.yaxis.set_major_locator(FixedLocator(yticks))
 ax.yaxis.set_major_formatter(FixedFormatter(processName))
+ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 ax.set_yticklabels(processName)
 ax.set_yticks(yticks)
 
