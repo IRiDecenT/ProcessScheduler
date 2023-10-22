@@ -3,6 +3,40 @@ from matplotlib.ticker import FixedFormatter, FixedLocator, MaxNLocator
 import numpy as np
 import fileinput
 
+
+
+# FCFS|8.6|2.56333
+# A|0-3
+# B|3-9
+# C|9-13
+# D|13-18
+# E|18-20
+# \n
+# HRRF|8|2.14333
+# A|0-3
+# B|3-9
+# C|9-13
+# D|15-20
+# E|13-15
+
+class package:
+    algo_name = ''
+    processName = []
+    time = []
+    avg_time = 0.0
+    avg_time_with_weight = 0.0
+    def __init__(self, name, t1, t2):
+        self.algo_name = name
+        self.avg_time = t1
+        self.avg_time_with_weight = t2
+
+    def appendProcessName(self, name):
+        self.processName.append(name)
+
+    def appendTimePeriod(self, period):
+        self.time.append(period)
+
+
 processName = []
 time = []
 

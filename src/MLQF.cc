@@ -20,10 +20,10 @@ int pri2period(int priority)
 void MLQF::solveTimeRecord()
 {
     //int size = _jobs.size();
-    for(const auto& j : _jobs)
+    for(auto& j : _jobs)
     {
-        int n = j._runPeriod.size();
-        int period = j._runPeriod[n - 1].second - j.arrivalTime();
+        int n = j.getRunPeriod().size();
+        int period = j.getRunPeriod()[n - 1].second - j.arrivalTime();
         _totalTime += period;
         _totalTime_with_weight += (double)period / j.runTime();
     }
@@ -32,10 +32,12 @@ void MLQF::solveTimeRecord()
 
 void MLQF::infoForPy()
 {
+    int sz = _jobs.size();
+    std::cout<< ":MLQF|" << (double)_totalTime / sz << "|" << _totalTime_with_weight / sz << std::endl;
     for(const auto& j : _jobs)
     {
-        std::cout << j.name();
-        for(const auto& period : j._runPeriod)
+        std::cout << j.name() << ":" << j.arrivalTime();
+        for(const auto& period : j.getRunPeriod())
         {
             std::cout << "|" << period.first << "-"
                     << period.second;
@@ -72,7 +74,7 @@ void MLQF::queuePRI0_scheduling(int& curTime)
             curJob_ptr->_leftRuntime -= runtime;
 
         // 记录运行时间片
-        (curJob_ptr->_runPeriod).push_back({curTime, curTime + runtime});
+        (curJob_ptr->getRunPeriod()).push_back({curTime, curTime + runtime});
         // 更新当前时间
         curTime += runtime;
         // 如果当前进程未在时间段内完成，则进入PRI1队列
@@ -112,7 +114,7 @@ void MLQF::queuePRI1_scheduling(int& curTime)
             curJob_ptr->_leftRuntime -= runtime;
 
         // 记录运行时间片
-        (curJob_ptr->_runPeriod).push_back({curTime, curTime + runtime});
+        (curJob_ptr->getRunPeriod()).push_back({curTime, curTime + runtime});
         // 更新当前时间
         curTime += runtime;
         // 如果当前进程未在时间段内完成，则进入PRI2队列
@@ -152,7 +154,7 @@ void MLQF::queuePRI2_scheduling(int& curTime)
         else
             curJob_ptr->_leftRuntime -= runtime;
         // 记录运行时间片
-        (curJob_ptr->_runPeriod).push_back({curTime, curTime + runtime});
+        (curJob_ptr->getRunPeriod()).push_back({curTime, curTime + runtime});
         // 更新当前时间
         curTime += runtime;
         // 如果当前进程未在时间段内完成，则重新进入PRI2队列等待被再次调度
@@ -184,7 +186,7 @@ void MLQF::schedulingInfo()
     for(const auto& j : _jobs)
     {
         std::cout << j.name() << ": ";
-        for(const auto& period : j._runPeriod)
+        for(const auto& period : j.getRunPeriod())
         {
             std::cout << "(" << period.first << ", "
                     << period.second << ")" << " ";

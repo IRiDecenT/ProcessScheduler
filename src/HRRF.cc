@@ -30,6 +30,18 @@ void HRRF::schedulingInfo()
 
 void HRRF::infoForPy()
 {
+    int sz = _jobs.size();
+    std::cout<< ":HRRF|" << (double)_totalTime / sz << "|" << _totalTime_with_weight / sz << std::endl;
+    for(const auto& j : _jobs)
+    {
+        std::cout << j.name() << ":" << j.arrivalTime();
+        for(const auto& period : j.getRunPeriod())
+        {
+            std::cout << "|" << period.first << "-"
+                    << period.second;
+        }
+        std::cout << std::endl;
+    }
 }
 
 timeRecord HRRF::run(bool isVisualized)
@@ -37,6 +49,9 @@ timeRecord HRRF::run(bool isVisualized)
     _runqueue.push_back(_jobs[0]);
     _jobs[0]._isProcessed = true;
     int curTime = _jobs[0].arrivalTime() + _jobs[0].runTime();
+
+    _jobs[0].getRunPeriod().push_back({_jobs[0].arrivalTime(), curTime});
+
     _totalTime += _jobs[0].runTime();
     _totalTime_with_weight += 1;
     while(_runqueue.size() != _jobs.size())
@@ -65,6 +80,7 @@ timeRecord HRRF::run(bool isVisualized)
         job_hrrf* curJob = waitqueue.top();
         curJob->_isProcessed = true;
         curTime = curJob->arrivalTime() + curJob->_waitTime + curJob->runTime();
+        curJob->getRunPeriod().push_back({curJob->arrivalTime() + curJob->_waitTime, curTime});
         _totalTime += (curJob->_waitTime + curJob->runTime());
         _totalTime_with_weight += (curJob->_waitTime + curJob->runTime()) / (1.0 * curJob->runTime());
         _runqueue.push_back(*curJob);

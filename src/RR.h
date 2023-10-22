@@ -11,7 +11,7 @@ struct job_rr : public job
     bool _inRunqueue;
     // bool _isProcessed;
     // int _lastInterruptTime; //上一次被切换走的时刻
-    std::vector<timePeriod> _runPeriod;
+    // std::vector<timePeriod> _runPeriod; // 转移到父类中
     job_rr(const job&);
 };
 

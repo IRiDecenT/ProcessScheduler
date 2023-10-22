@@ -1,27 +1,34 @@
 #include "FCFS.h"
 
-FCFS::FCFS(const std::vector<job> &v):_totalTime(0), _totalTime_with_weight(0.0)
-{
-    for(const auto& job: v)
-        _runqueue.push(job);
-}
+FCFS::FCFS(const std::vector<job> &v):
+        _runqueue(v),
+        _totalTime(0),
+        _totalTime_with_weight(0.0)
+{}
 
 void FCFS::schedulingInfo()
 {
     std::cout<< "模拟FCFS调度算法, 进程的调度执行顺序如下:" << std::endl;
-    auto q = _runqueue;
-    while(!q.empty())
-    {
-        std::cout<<q.top();
-        q.pop();
-    }
+    for(const auto& j : _runqueue)
+        std::cout<< j;
     int sz = _runqueue.size();
     printTime({ (double)_totalTime / sz, _totalTime_with_weight / sz } );
 }
 
 void FCFS::infoForPy()
 {
-
+    int sz = _runqueue.size();
+    std::cout<< ":FCFS|" << (double)_totalTime / sz << "|" << _totalTime_with_weight / sz << std::endl;
+    for(const auto& j : _runqueue)
+    {
+        std::cout << j.name() << ":" << j.arrivalTime();
+        for(const auto& period : j.getRunPeriod())
+        {
+            std::cout << "|" << period.first << "-"
+                    << period.second;
+        }
+        std::cout << std::endl;
+    }
 }
 
 // void FCFS::printTime()
@@ -33,18 +40,17 @@ void FCFS::infoForPy()
 timeRecord FCFS::run(bool isVisualized)
 {
     int sz = _runqueue.size();
-    auto q = _runqueue;
-    int preEnd = q.top().arrivalTime();
-    while(!q.empty())
+    std::sort(_runqueue.begin(), _runqueue.end(), compByArrivalFirst());
+    int preEnd = _runqueue.front().arrivalTime();
+    for(auto& j : _runqueue)
     {
-        auto j = q.top();
+        j.getRunPeriod().push_back({preEnd, preEnd + j.runTime()});
         int wait = ( preEnd <= j.arrivalTime() ? 0 : preEnd - j.arrivalTime() );
         _totalTime += ( wait + j.runTime() );
         _totalTime_with_weight += ( wait + j.runTime()) / (1.0 * j.runTime());
         // for debug
         //std::cout<< _totalTime << " " << _totalTime_with_weight<< std::endl;
         preEnd = j.arrivalTime() + wait + j.runTime();
-        q.pop();
     }
     //schedulingInfo();
     //printTime();

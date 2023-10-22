@@ -4,6 +4,8 @@
 #include "HRRF.h"
 #include "RR.h"
 #include "MLQF.h"
+#include "SRTF.h"
+#include "SJF.h"
 
 // hardcode for now, only to test
 std::vector<job> load_data()
@@ -45,6 +47,23 @@ std::vector<job> load_data()
 //     printTime(f.run());
 // }
 
+
+// void test_SJF()
+// {
+//     auto jobs = load_data();
+//     SJF f(jobs);
+//     printTime(f.run());
+// }
+
+void test_SRTF()
+{
+    auto jobs = load_data();
+    SRTF f(jobs);
+    f.run(true);
+    f.outputSchedulingInfo();
+}
+
+
 template<typename T>
 void test(bool flag)
 {
@@ -67,39 +86,34 @@ void usage()
 
 // void f()
 // {
-//     bool vis;
-//     if(argc == 1)
-//         vis = false;
-//     else if(argc == 2 && strcmp("-v", argv[1]))
-//         vis = true;
-//     else
-//     {
-//         usage();
-//         exit(-1);
-//     }
 
-//     test<FCFS>(vis);
-//     test<HRRF>(vis);
-//     test<MLQF>(vis);
-//     test<RR>(vis);
 // }
+
+
 
 int main(int argc, char* argv[])
 {
+
     bool vis;
 
     if(argc == 1)
     {
         vis = false;
         test<FCFS>(vis);
+        test<SJF>(vis);
         test<HRRF>(vis);
         test<RR>(vis);
         test<MLQF>(vis);
+        //test_SRTF();
+
     }
     else if(argc == 2 && (strcmp("-v", argv[1]) == 0))
     {
         vis = true;
-        // test<MLQF>(vis);
+        test<FCFS>(vis);
+        test<SJF>(vis);
+        test<HRRF>(vis);
+        test<RR>(vis);
         test<MLQF>(vis);
     }
     else
@@ -107,7 +121,5 @@ int main(int argc, char* argv[])
         usage();
         exit(-1);
     }
-
-
     return 0;
 }

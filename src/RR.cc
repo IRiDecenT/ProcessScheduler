@@ -11,8 +11,9 @@ void RR::solveTimeRecord()
     //int size = _jobs.size();
     for(const auto& j : _jobs)
     {
-        int n = j._runPeriod.size();
-        int period = j._runPeriod[n - 1].second - j.arrivalTime();
+
+        int n = j.getRunPeriod().size();
+        int period = j.getRunPeriod()[n - 1].second - j.arrivalTime();
         _totalTime += period;
         _totalTime_with_weight += (double)period / j.runTime();
     }
@@ -30,7 +31,7 @@ void RR::schedulingInfo()
     for(const auto& j : _jobs)
     {
         std::cout << j.name() << ": ";
-        for(const auto& period : j._runPeriod)
+        for(const auto& period : j.getRunPeriod())
         {
             std::cout << "(" << period.first << ", "
                     << period.second << ")" << " ";
@@ -52,10 +53,12 @@ bool RR::allInQueue()
 // test
 void RR::infoForPy()
 {
+    int sz = _jobs.size();
+    std::cout<< ":RR|" << (double)_totalTime / sz << "|" << _totalTime_with_weight / sz << std::endl;
     for(const auto& j : _jobs)
     {
-        std::cout << j.name();
-        for(const auto& period : j._runPeriod)
+        std::cout << j.name() << ":" << j.arrivalTime();
+        for(const auto& period : j.getRunPeriod())
         {
             std::cout << "|" << period.first << "-"
                     << period.second;
@@ -106,7 +109,7 @@ timeRecord RR::run(bool isVisualized)
         else
             curJob_ptr->_leftRuntime -= runtime;
 
-        (curJob_ptr->_runPeriod).push_back({curTime, curTime + runtime});
+        (curJob_ptr->getRunPeriod()).push_back({curTime, curTime + runtime});
         curTime += runtime;
 
         // 在当前进程运行时间片结束要被切换时，将在当前时间之到来的进程加入到runqueue中等待

@@ -19,7 +19,7 @@ struct job_mlqf : public job
 {
     int _leftRuntime;
     int _queueIndex;
-    std::vector<timePeriod> _runPeriod;
+    // std::vector<timePeriod> _runPeriod;
     job_mlqf(const job&);
 };
 
