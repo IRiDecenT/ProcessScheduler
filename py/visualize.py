@@ -3,6 +3,15 @@ from matplotlib.ticker import FixedFormatter, FixedLocator, MaxNLocator
 import numpy as np
 import fileinput
 
+# for example
+# :RR|10|2.71|4
+# A:0|0-1|1-3
+# B:2|3-4|5-7|14-17
+# C:4|4-5|9-11|17-18
+# D:6|7-8|11-13|18-20
+# E:8|8-9|13-14
+# \n
+
 class package:
     # algo_name = ''
     # processName = []

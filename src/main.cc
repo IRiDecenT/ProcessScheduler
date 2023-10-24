@@ -84,12 +84,6 @@ void usage()
     std::cerr << "\t\t./main -v | python3 [visualize python code] (to visualize the information)" << std::endl;
 }
 
-// void f()
-// {
-
-// }
-
-
 
 int main(int argc, char* argv[])
 {
